@@ -90,7 +90,7 @@ function findBestMove(board, player) {
 	if(cnt<4) {
 		// if opponent has center, take any corner:
 		if(board & (3-player)<<8) b = findAnyAvailable(board, player, [0, 2, 6, 8]);
-		// if cnt is even and edges are empty:
+		// if cnt is even and edges are empty, take any corner:
 		else if(!(cnt&1) && !(board & 0xCCCC)) b = findAnyAvailable(board, player, [0, 2, 6, 8]);
 		// if center is empty, take it:
 		else if(!(board & 0x300)) b = board | player<<8;
