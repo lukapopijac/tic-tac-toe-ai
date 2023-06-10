@@ -35,7 +35,43 @@ win_masks = [
 ]
 
 def find_best_move(board, player):
-	pass
+	# find winning move:
+	b = find_winning_move(board, player)
+	if b: return b
+
+	# find blocking move (winning move for the opponent):
+	b = find_winning_move(board, 3-player)
+	if b:
+		c = board^b                      # get the board only with the last symbol
+		c = c>>1 if player==1 else c<<1  # swap the symbol
+		return board|c                   # put the symbol back
+	
+	cnt = count_symbols(board)
+	if cnt<4:
+		if board & (3-player)<<8:              # if opponent has center, take any corner
+			b = find_any_available(board, player, [0, 2, 6, 8])		
+		elif cnt&1==0 and not board&0xCCCC:    # if cnt is even and edges are empty, take any corner
+			b = find_any_available(board, player, [0, 2, 6, 8])
+		elif not board&0x300:                  # if center is empty, take it
+			b = board | player<<8
+		elif not board&0xCCCC:                 # if edges are empty, take any edge
+			b = find_any_available(board, player, [1, 3, 5, 7])
+		# take any corner adjacent to a taken edge:
+		elif board&0x00CC:
+			b = board | player
+		elif board&0xCC00:
+			b = board | player<<16
+
+		if b: return b
+
+	# find a fork, or else any attack:
+	b = find_best_attack(board, player)
+	if b: return b
+	
+	# play any move:
+	b = find_any_available(board, player, [0, 1, 2, 3, 4, 5, 6, 7, 8])
+	if b: return b
+
 
 # function findBestMove(board, player) {
 # 	let b;
@@ -209,8 +245,7 @@ def play():
 		winner = get_winner(board)
 		if winner is not None: break
 		player = 3 - player
-	
-		break
 
+	print(boards_to_string(boards))
 
-# play()
+play()

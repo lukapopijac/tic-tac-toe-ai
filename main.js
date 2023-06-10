@@ -226,10 +226,11 @@ function test() {
 // test();
 
 function play() {
-	let player = 1;
 	let aiPlayer = 2;
 	let boards = [];
 	let board = 0;
+
+	let player = 1;
 	while(true) {
 		if(player == aiPlayer) board = findBestMove(board, player);
 		else if(Math.random()>.2) board = findBestMove(board, player);
@@ -240,9 +241,7 @@ function play() {
 		if(winner >= 0) break;
 		player = 3 - player;
 	}
-	console.log(
-		boards2string(boards)
-	)
+	console.log(boards2string(boards))
 }
 
 play();

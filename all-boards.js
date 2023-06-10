@@ -17,7 +17,7 @@ function main() {
 	}
 	fs.writeFileSync('out3.txt', boards2string(bs3));
 
-	getHashes(bs3);
+	// getHashes(bs3);
 
 	// print sizes
 	console.log(boards.size);
@@ -72,7 +72,7 @@ function filterSymmetries(boards) {
 
 function generateBoards(boards, board, player, depth) {
 	boards.add(board);
-	if(depth==8) return;
+	// if(depth==8) return;
 	for(let i=0; i<9; i++)
 		if(!(board & 0b11<<i<<i))
 			generateBoards(boards, board | player<<i<<i, 3-player, depth+1);
