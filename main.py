@@ -46,23 +46,31 @@ def find_best_move(board, player):
 		c = c>>1 if player==1 else c<<1  # swap the symbol
 		return board|c                   # put the symbol back
 	
+	# handle if less than 4 symbols:
 	cnt = count_symbols(board)
 	if cnt<4:
-		if board & (3-player)<<8:              # if opponent has center, take any corner
-			b = find_any_available(board, player, [0, 2, 6, 8])		
-		elif cnt&1==0 and not board&0xCCCC:    # if cnt is even and edges are empty, take any corner
-			b = find_any_available(board, player, [0, 2, 6, 8])
-		elif not board&0x300:                  # if center is empty, take it
-			b = board | player<<8
-		elif not board&0xCCCC:                 # if edges are empty, take any edge
-			b = find_any_available(board, player, [1, 3, 5, 7])
+		# if opponent has center, take any corner:
+		if board & (3-player)<<8:
+			return find_any_available(board, player, [0, 2, 6, 8])
+		
+		# if cnt is even and edges are empty, take any corner
+		if cnt&1==0 and not board&0b_00_11_00_11_00_11_00_11_00:
+			return find_any_available(board, player, [0, 2, 6, 8])
+		
+		# if center is empty, take it:
+		if not board&0b_00_00_00_00_11_00_00_00_00:
+			return board | player<<8
+		
+		# if edges are empty, take any edge:
+		if not board&0b_00_11_00_11_00_11_00_11_00:
+			return find_any_available(board, player, [1, 3, 5, 7])
+		
 		# take any corner adjacent to a taken edge:
-		elif board&0x00CC:
-			b = board | player
-		elif board&0xCC00:
-			b = board | player<<16
+		if board&0b_00_00_00_00_00_11_00_11_00:
+			return board | player
+		if board&0b_00_11_00_11_00_00_00_00_00:
+			return board | player<<16
 
-		if b: return b
 
 	# find a fork, or else any attack:
 	b = find_best_attack(board, player)
@@ -71,49 +79,6 @@ def find_best_move(board, player):
 	# play any move:
 	b = find_any_available(board, player, [0, 1, 2, 3, 4, 5, 6, 7, 8])
 	if b: return b
-
-
-# function findBestMove(board, player) {
-# 	let b;
-
-# 	// find winning move:
-# 	if(b = findWinMove(board, player)) return b;
-
-# 	// find blocking move (winning move for the opponent):
-# 	if(b = findWinMove(board, 3-player)) {
-# 		// get the board with only last symbol:
-# 		let c = board^b;
-# 		// swap the symbol:
-# 		if(player==1) c >>= 1; else c <<= 1;
-# 		// put the symbol on the board:
-# 		return board|c;
-# 	}
-
-# 	let cnt = countSymbols(board);
-# 	if(cnt<4) {
-# 		// if opponent has center, take any corner:
-# 		if(board & (3-player)<<8) b = findAnyAvailable(board, player, [0, 2, 6, 8]);
-# 		// if cnt is even and edges are empty, take any corner:
-# 		else if(!(cnt&1) && !(board & 0xCCCC)) b = findAnyAvailable(board, player, [0, 2, 6, 8]);
-# 		// if center is empty, take it:
-# 		else if(!(board & 0x300)) b = board | player<<8;
-# 		// if edges are empty, take any edge:
-# 		else if(!(board & 0xCCCC)) b = findAnyAvailable(board, player, [1, 3, 5, 7]);
-# 		// take any corner adjacent to a taken edge:
-# 		else if(board & 0x00CC) b = board | player;
-# 		else if(board & 0xCC00) b = board | player<<16;
-		
-# 		if(b) return b;
-# 	}
-	
-# 	// find double-attack, or else any attack:
-# 	if(b = findBestAttack(board, player)) return b;
-	
-# 	// play any move:
-# 	if(b = findAnyAvailable(board, player, [0, 1, 2, 3, 4, 5, 6, 7, 8])) return b;
-
-# 	return 0;
-# }
 
 
 def count_symbols(board):
@@ -131,17 +96,11 @@ def are_successive_boards(b1, b2):
 	b = b1^b2
 	return b>0 and not b & b-1   # is not 0 && is power of 2
 
-
-# TODO: remove this function
-def check_successive_boards(b1, b2):
-	if not is_valid_board(b2): return False
-	return are_successive_boards(b1, b2)
-
-
 def find_any_available(board, player, allowed):
 	random.shuffle(allowed)
 	for p in allowed:
-		if board & 0b11<<2*p == 0: return board | player<<2*p
+		if board & 0b11<<2*p == 0:
+			return board | player<<2*p
 
 
 def find_best_attack(board, player):   # find a fork if exists, else find any attack
