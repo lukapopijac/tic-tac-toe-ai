@@ -3,6 +3,7 @@ import re
 
 
 def board_to_string(board):
+	if board is None: return '---'
 	s = format(board, '018b')
 	s = re.sub('..', lambda m: {'00': '. ', '01': 'X ', '10': 'O '}[m[0]], s)
 	s = re.findall('......', s)
@@ -110,14 +111,19 @@ def find_best_attack(board, player):   # find a fork if exists, else find any at
 	return best_new_board
 
 
+def find_any_attack(board, player):
+	for p in range(9):
+		if board & 0b11<<2*p: continue  # this cell is taken
 
-# board = 0b000_10_01_00_00_10_00_00_00_01
-# print(board_to_string(board))
-# print()
-# newBoard = find_best_attack(board, 2)
-# print(board_to_string(newBoard))
+		b1 = board | player<<2*p
+		if find_winning_move(b1, player):
+			return b1
 
-
+		# for mask in win_masks:
+		# 	mask *= player
+		# 	b2 = b1 | mask
+		# 	if is_valid_board(b2) and are_successive_boards(b1, b2):
+		# 		return b1
 
 
 def find_winning_move(board, player):
@@ -126,6 +132,17 @@ def find_winning_move(board, player):
 		new_board = board | mask
 		if is_valid_board(new_board) and are_successive_boards(board, new_board):
 			return new_board
+
+
+board = 0b_01_00_00_10_00_00_00_01_10
+print(board_to_string(board))
+print()
+newBoard = find_any_attack(board, 1)
+print(board_to_string(newBoard))
+print()
+
+
+
 
 
 def find_blocking_move(board, player):

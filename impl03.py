@@ -31,3 +31,10 @@ def find_blocking_move(board, player):
 		c = c>>1 if player==1 else c<<1     # swap the symbol
 		return board | c                    # put the symbol back
 
+def find_any_attack(board, player):
+	for p in range(9):
+		if board & 0b11<<2*p: continue  # this cell is taken
+
+		b1 = board | player<<2*p
+		if find_winning_move(b1, player):
+			return b1
