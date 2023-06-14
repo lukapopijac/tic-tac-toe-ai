@@ -40,7 +40,7 @@ win_masks = [
 	0b_00_00_01_00_01_00_01_00_00
 ]
 
-def find_best_move(board, player):
+def find_best_move2(board, player):
 	# find winning move:
 	if b := find_winning_move(board, player): return b
 
@@ -50,7 +50,7 @@ def find_best_move(board, player):
 	# handle if less than 4 symbols:
 	if count_symbols(board) < 4:
 		# if it's player 1's turn and edges are empty, take any corner:
-		if player==1 and not board&0b_00_11_00_11_00_11_00_11_00:
+		if player==1 and not board & 0b_00_11_00_11_00_11_00_11_00:
 			return find_any_available(board, player, [0, 2, 6, 8])
 
 		# if player 2 has center:
@@ -69,6 +69,25 @@ def find_best_move(board, player):
 
 	# play any move:
 	return find_any_available(board, player, [0, 1, 2, 3, 4, 5, 6, 7, 8])
+
+
+def find_best_move(board, player):
+	if b := find_winning_move(board, player): return b
+
+	if b := find_blocking_move(board, player): return b
+
+	if count_symbols(board) < 4:
+		if player==1 and not board & 0xCCCC:           # edges empty
+			return find_any_available(board, player, shuffle([0, 2, 6, 8]))
+		if board & 0x200:                              # player 2 has center
+			if board & 0x00CC: return board | player
+			if board & 0xCC00: return board | player<<16
+			return find_any_available(board, player, shuffle([1, 3, 5, 7]))
+		return find_any_available(board, player, [4] + shuffle([0, 2, 6, 8]))
+
+	if b := find_best_attack(board, player): return b
+	
+	return find_any_available(board, player, shuffle([0, 1, 2, 3, 4, 5, 6, 7, 8]))
 
 
 def count_symbols(board):
@@ -111,19 +130,27 @@ def find_best_attack(board, player):   # find a fork if exists, else find any at
 	return best_new_board
 
 
-def find_any_attack(board, player):
+def find_attack(board, player):
 	for p in range(9):
 		if board & 0b11<<2*p: continue  # this cell is taken
-
 		b1 = board | player<<2*p
 		if find_winning_move(b1, player):
 			return b1
 
-		# for mask in win_masks:
-		# 	mask *= player
-		# 	b2 = b1 | mask
-		# 	if is_valid_board(b2) and are_successive_boards(b1, b2):
-		# 		return b1
+def find_fork(board, player):
+	fork_board = None
+
+	for p in range(9):
+		if board & 0b11<<2*p: continue  # this cell is taken
+		b1 = board | player<<2*p
+
+		for mask in win_masks:
+			mask *= player
+			b2 = b1 | mask
+			if is_valid_board(b2) and are_successive_boards(b1, b2):
+				# if already found another attack with b1, then this is a fork, return immediatelly:
+				if fork_board == b1: return b1
+				fork_board = b1
 
 
 def find_winning_move(board, player):
@@ -137,7 +164,7 @@ def find_winning_move(board, player):
 board = 0b_01_00_00_10_00_00_00_01_10
 print(board_to_string(board))
 print()
-newBoard = find_any_attack(board, 1)
+newBoard = find_fork(board, 1)
 print(board_to_string(newBoard))
 print()
 
