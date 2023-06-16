@@ -11,7 +11,7 @@
 	<defs>
 		<path id="grid" d="M-2,-6 V6 M2,-6 V6 M-6,-2 H6 M-6,2 H6"/>
 		<style>
-			#text {
+			text {
 				font-family: Verdana;
 				alignment-baseline: central;
 				text-anchor: middle;
@@ -22,14 +22,14 @@
 
 	<g transform="translate(7,7)">
 		<use href="#grid"/>
-		<text id="text" x=4  y=4 >0</text>
-		<text id="text" x=0  y=4 >1</text>
-		<text id="text" x=-4 y=4 >2</text>
-		<text id="text" x=4  y=0 >3</text>
-		<text id="text" x=0  y=0 >4</text>
-		<text id="text" x=-4 y=0 >5</text>
-		<text id="text" x=4  y=-4>6</text>
-		<text id="text" x=0  y=-4>7</text>
-		<text id="text" x=-4 y=-4>8</text>
+		<text x=4  y=4 >0</text>
+		<text x=0  y=4 >1</text>
+		<text x=-4 y=4 >2</text>
+		<text x=4  y=0 >3</text>
+		<text x=0  y=0 >4</text>
+		<text x=-4 y=0 >5</text>
+		<text x=4  y=-4>6</text>
+		<text x=0  y=-4>7</text>
+		<text x=-4 y=-4>8</text>
 	</g>
 </svg>
