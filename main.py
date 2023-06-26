@@ -57,7 +57,6 @@ def are_successive_boards(b1, b2):
 
 
 def find_available(board, player, allowed):
-	# random.shuffle(allowed)
 	for p in allowed:
 		if board & 0b11<<2*p == 0:
 			return board | player<<2*p
@@ -74,7 +73,7 @@ def find_best_attack(board, player):   # find a fork if exists, else find any at
 			mask *= player
 			b2 = b1 | mask
 			if is_valid_board(b2) and are_successive_boards(b1, b2):
-				# if already found another attack with b1, then this is a fork, return immediatelly:
+				# if already found another attack with b1, then this is a fork:
 				if best_new_board == b1: return b1
 				best_new_board = b1
 

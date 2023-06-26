@@ -1,4 +1,4 @@
-import fs from 'fs';
+const fs = require('fs');
 
 function main() {
 	let boards = new Set([0]);
@@ -10,7 +10,6 @@ function main() {
 	fs.writeFileSync('out2.txt', boards2string(bs2));
 
 	// get boards that are not won
-
 	let bs3 = [];
 	for(let board of bs2) {
 		if(!(whoWon(board))) bs3.push(board);
@@ -29,13 +28,7 @@ function main() {
 main();
 
 
-// c = 0.014301941434275989  size = 627   m = 7000
-// c = 0.5404006775241361    size = 627   m = 7000
-// c = 0.4101994030472713    size = 627   m = 7000
-
-// c = 0.3767134723156125    size = 627   m = 6500
 // c = 0.11515309035644505    size = 627   m = 6000
-
 // c = 0.43096829353541266    size = 627   m = 5500
 
 
@@ -158,9 +151,6 @@ function whoWon(board) {
 		0b000_00_00_01_00_00_00_01_00_01
 	];
 	for(let mask of winMasks) {
-		// console.log(board.toString(2))
-		// console.log(mask.toString(2))
-		// console.log((board&mask).toString(2))
 		if((board&mask) == mask) return 1;
 		mask <<= 1;
 		if((board&mask) == mask) return 2;
